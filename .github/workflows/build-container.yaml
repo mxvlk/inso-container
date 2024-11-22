@@ -44,7 +44,7 @@ jobs:
           inso_version=$(echo $latest_inso | jq -r '.tag_name')
           inso_published_at=$(echo $latest_inso | jq -r '.published_at')
           inso_download_url=$(echo $latest_inso | jq -r '.assets[] | select(.name | endswith("linux.tar.xz")) | .browser_download_url')
-          echo "inso_version=${inso_version#v}" >> $GITHUB_ENV
+          echo "inso_version=${inso_version#*@}" >> $GITHUB_ENV
           echo "inso_published_at=$inso_published_at" >> $GITHUB_ENV
           echo "inso_download_url=$inso_download_url" >> $GITHUB_ENV
 
@@ -68,6 +68,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.inso_version }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:$inso_version
           build-args: |
             INSO_DOWNLOAD_URL=${{ env.inso_download_url }}
