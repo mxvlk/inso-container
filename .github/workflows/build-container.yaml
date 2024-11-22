@@ -1,0 +1,64 @@
+name: Check for Updates and Build Docker Image
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # This cron expression schedules the action to run daily at midnight UTC
+env:
+  REGISTRY: ghcr.io
+  REGISTRY_PW: ${{ secrets.GHCR_TOKEN }}
+  IMAGE_NAME: inso-container
+  ALPINE_URL: https://registry.hub.docker.com/v2/repositories/library/alpine/tags/latest
+  INSO_URL: https://api.github.com/repos/Kong/insomnia/releases/latest
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ env.REGISTRY_PW }}
+
+      - name: Check for new Alpine image
+        id: check_alpine
+        run: |
+          latest_alpine=$(curl -s ${{ env.ALPINE_URL }} | jq -r '.last_updated')
+          echo "latest_alpine=$latest_alpine" >> $GITHUB_ENV
+
+      - name: Check for new Inso release
+        id: check_inso
+        run: |
+          latest_inso=$(curl -s ${{ env.INSO_URL }})
+          inso_version=$(echo $latest_inso | jq -r '.tag_name')
+          inso_published_at=$(echo $latest_inso | jq -r '.published_at')
+          inso_download_url=$(echo $latest_inso | jq -r '.assets[] | select(.name | endswith("linux.tar.xz")) | .browser_download_url')
+          echo "inso_version=${inso_version#v}" >> $GITHUB_ENV
+          echo "inso_published_at=$inso_published_at" >> $GITHUB_ENV
+          echo "inso_download_url=$inso_download_url" >> $GITHUB_ENV
+
+      - name: Compare timestamps
+        id: compare
+        run: |
+          alpine_timestamp=$(date -d ${{ env.latest_alpine }} +%s)
+          inso_timestamp=$(date -d ${{ env.latest_inso }} +%s)
+          current_timestamp=$(date +%s)
+          alpine_diff=$(( (current_timestamp - alpine_timestamp) / 86400 ))
+          inso_diff=$(( (current_timestamp - inso_timestamp) / 86400 ))
+          echo "alpine_diff=$alpine_diff" >> $GITHUB_ENV
+          echo "inso_diff=$inso_diff" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        if: steps.compare.outputs.alpine_diff < 1 || steps.compare.outputs.inso_diff < 1
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.inso_version }}
+          build-args: |
+            INSO_DOWNLOAD_URL=${{ env.inso_download_url }}
