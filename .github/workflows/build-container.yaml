@@ -2,7 +2,7 @@ name: Check for Updates and Build Docker Image
 
 on:
   schedule:
-    - cron: '0 0 * * *' # This cron expression schedules the action to run daily at midnight UTC
+    - cron: '0 0 * * MON' # Runs at 00:00 UTC every Monday
   workflow_dispatch: # Allows manual triggering of the workflow
 
 env:
@@ -43,7 +43,7 @@ jobs:
           latest_inso=$(curl -s ${{ env.INSO_URL }})
           inso_version=$(echo $latest_inso | jq -r '.tag_name')
           inso_published_at=$(echo $latest_inso | jq -r '.published_at')
-          inso_download_url=$(echo $latest_inso | jq -r '.assets[] | select(.name | endswith("linux.tar.xz")) | .browser_download_url')
+          inso_download_url=$(echo $latest_inso | jq -r '.assets[] | select(.name | contains("inso") and contains(".tar.xz")) | .browser_download_url')
           echo "inso_version=${inso_version#*@}" >> $GITHUB_ENV
           echo "inso_published_at=$inso_published_at" >> $GITHUB_ENV
           echo "inso_download_url=$inso_download_url" >> $GITHUB_ENV
@@ -58,9 +58,6 @@ jobs:
           inso_diff=$(( (current_timestamp - inso_timestamp) / 86400 ))
           echo "alpine_diff=$alpine_diff" >> $GITHUB_ENV
           echo "inso_diff=$inso_diff" >> $GITHUB_ENV
-          
-      - name: debug
-        run: echo "${{ env.inso_download_url }} $inso_download_url"
 
       - name: Build and push Docker image
         if: steps.compare.outputs.alpine_diff < 1 || steps.compare.outputs.inso_diff < 1
