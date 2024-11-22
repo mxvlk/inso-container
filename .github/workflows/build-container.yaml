@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 0 * * *' # This cron expression schedules the action to run daily at midnight UTC
   workflow_dispatch: # Allows manual triggering of the workflow
-  
+
 env:
   REGISTRY: ghcr.io
   REGISTRY_PW: ${{ secrets.GHCR_TOKEN }}
@@ -47,6 +47,9 @@ jobs:
           echo "inso_version=${inso_version#v}" >> $GITHUB_ENV
           echo "inso_published_at=$inso_published_at" >> $GITHUB_ENV
           echo "inso_download_url=$inso_download_url" >> $GITHUB_ENV
+
+      - name: debug
+        run: echo "$latest_alpine"
 
       - name: Compare timestamps
         id: compare
