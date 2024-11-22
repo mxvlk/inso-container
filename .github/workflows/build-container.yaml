@@ -3,6 +3,8 @@ name: Check for Updates and Build Docker Image
 on:
   schedule:
     - cron: '0 0 * * *' # This cron expression schedules the action to run daily at midnight UTC
+  workflow_dispatch: # Allows manual triggering of the workflow
+  
 env:
   REGISTRY: ghcr.io
   REGISTRY_PW: ${{ secrets.GHCR_TOKEN }}
