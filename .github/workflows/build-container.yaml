@@ -48,9 +48,6 @@ jobs:
           echo "inso_published_at=$inso_published_at" >> $GITHUB_ENV
           echo "inso_download_url=$inso_download_url" >> $GITHUB_ENV
 
-      - name: debug
-        run: echo "$latest_alpine"
-
       - name: Compare timestamps
         id: compare
         run: |
@@ -61,6 +58,9 @@ jobs:
           inso_diff=$(( (current_timestamp - inso_timestamp) / 86400 ))
           echo "alpine_diff=$alpine_diff" >> $GITHUB_ENV
           echo "inso_diff=$inso_diff" >> $GITHUB_ENV
+          
+      - name: debug
+        run: echo "${{ env.inso_download_url }} $inso_download_url"
 
       - name: Build and push Docker image
         if: steps.compare.outputs.alpine_diff < 1 || steps.compare.outputs.inso_diff < 1
