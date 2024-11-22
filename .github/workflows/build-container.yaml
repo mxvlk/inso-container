@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   REGISTRY_PW: ${{ secrets.GHCR_TOKEN }}
-  IMAGE_NAME: inso-con
+  IMAGE_NAME: inso-container
   ALPINE_URL: https://registry.hub.docker.com/v2/repositories/library/alpine/tags/latest
   INSO_URL: https://api.github.com/repos/Kong/insomnia/releases/latest
 
@@ -19,6 +19,9 @@ defaults:
 jobs:
   check-and-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
