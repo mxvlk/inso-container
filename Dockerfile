@@ -8,7 +8,7 @@ RUN apk add --no-cache curl xz ca-certificates
 WORKDIR /work
 
 # Fetch the Inso binary dynamically
-ARG INSO_DOWNLOAD_URL
+ARG INSO_DOWNLOAD_URL=google.com
 ENV INSO_DOWNLOAD_URL=${INSO_DOWNLOAD_URL}
 
 RUN echo "${INSO_DOWNLOAD_URL}"
