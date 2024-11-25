@@ -37,8 +37,8 @@ jobs:
       - name: Check for new Alpine image
         id: check_alpine
         run: |
-          latest_alpine=$(curl -s ${{ env.ALPINE_URL }} | jq -r '.last_updated')
-          echo "latest_alpine=$latest_alpine" >> $GITHUB_ENV
+          alpine_published_at=$(curl -s ${{ env.ALPINE_URL }} | jq -r '.last_updated')
+          echo "alpine_published_at=$alpine_published_at" >> $GITHUB_ENV
 
       - name: Check for new Inso release
         id: check_inso
@@ -54,8 +54,8 @@ jobs:
       - name: Compare timestamps
         id: compare
         run: |
-          alpine_timestamp=$(date -d "$latest_alpine" +%s)
-          inso_timestamp=$(date -d "$latest_inso" +%s)
+          alpine_timestamp=$(date -d "$alpine_published_at" +%s)
+          inso_timestamp=$(date -d "$inso_published_at" +%s)
           current_timestamp=$(date +%s)
           alpine_diff=$(( (current_timestamp - alpine_timestamp) / 86400 ))
           inso_diff=$(( (current_timestamp - inso_timestamp) / 86400 ))
