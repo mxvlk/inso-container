@@ -59,8 +59,8 @@ jobs:
           current_timestamp=$(date +%s)
           alpine_diff=$(( (current_timestamp - alpine_timestamp) / 86400 ))
           inso_diff=$(( (current_timestamp - inso_timestamp) / 86400 ))
-          echo "::set-output name=alpine_diff::$alpine_diff"
-          echo "::set-output name=inso_diff::$inso_diff"
+          echo "alpine_diff=$alpine_diff" >> $GITHUB_OUTPUT
+          echo "inso_diff=$inso_diff" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         if: steps.compare.outputs.alpine_diff < 7 || steps.compare.outputs.inso_diff < 7
