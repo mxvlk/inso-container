@@ -67,7 +67,7 @@ jobs:
         run: |
           docker build -t ${{ env.IMAGE_NAME }} \
           --build-arg INSO_DOWNLOAD_URL=${{ env.inso_download_url }} \
-          --label "org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/${{ github.repository }}" \
+          --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
           --label "org.opencontainers.image.description=inso container image" .
           docker tag ${{ env.IMAGE_NAME }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
