@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   REGISTRY_PW: ${{ secrets.GHCR_TOKEN }}
-  IMAGE_NAME: inso-container
+  IMAGE_NAME: inso
   ALPINE_URL: https://registry.hub.docker.com/v2/repositories/library/alpine/tags/latest
   INSO_URL: https://api.github.com/repos/Kong/insomnia/releases/latest
 
@@ -65,6 +65,9 @@ jobs:
       - name: Build and push Docker image
         if: steps.compare.outputs.alpine_diff < 7 || steps.compare.outputs.inso_diff < 7
         run: |
-          docker build -t ${{ env.IMAGE_NAME }} --build-arg INSO_DOWNLOAD_URL=${{ env.inso_download_url }} .
+          docker build -t ${{ env.IMAGE_NAME }} \
+          --build-arg INSO_DOWNLOAD_URL=${{ env.inso_download_url }} \
+          --label "org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/${{ github.repository }}" \
+          --label "org.opencontainers.image.description=inso container image" .
           docker tag ${{ env.IMAGE_NAME }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
