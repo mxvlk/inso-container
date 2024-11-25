@@ -63,7 +63,7 @@ jobs:
           echo "inso_diff=$inso_diff" >> $GITHUB_ENV
 
       - name: Build and push Docker image
-        if: steps.compare.outputs.alpine_diff < 1 || steps.compare.outputs.inso_diff < 1
+        if: steps.compare.outputs.alpine_diff < 7 || steps.compare.outputs.inso_diff < 7
         uses: docker/build-push-action@v6
         with:
           context: .
