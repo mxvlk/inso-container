@@ -66,5 +66,5 @@ jobs:
         if: steps.compare.outputs.alpine_diff < 7 || steps.compare.outputs.inso_diff < 7
         run: |
           docker build -t ${{ env.IMAGE_NAME }} --build-arg INSO_DOWNLOAD_URL=${{ env.inso_download_url }} .
-          docker tag ${{ env.IMAGE_NAME }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }} ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
