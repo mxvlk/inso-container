@@ -63,7 +63,7 @@ jobs:
           echo "inso_diff=$inso_diff" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
-        if: steps.compare.outputs.alpine_diff < 7 || steps.compare.outputs.inso_diff < 7
+        if: steps.compare.outputs.alpine_diff < 8 || steps.compare.outputs.inso_diff < 8
         run: |
           docker build -t ${{ env.IMAGE_NAME }} \
           --build-arg INSO_DOWNLOAD_URL=${{ env.inso_download_url }} \
